@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName  "SYSMod"
-AuthUserFile  /home/secure/modinterface
-Require user moderator
