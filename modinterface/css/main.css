@@ -1,0 +1,65 @@
+table
+{
+border-spacing:0px;
+}
+
+td
+{
+padding:0px;
+}
+
+.sysdivheading
+{
+float: left; 
+text-align: left;
+width:1200px;
+display: table; 
+table-layout: fixed;
+}
+
+.sysdivheading div{
+display: table-cell;
+border:1px solid gray;
+width:200px;
+background-color:#FFA500;
+}
+
+
+.sysdiv 
+{
+float: left; 
+text-align: left;
+width:1200px;
+display: table; 
+table-layout: fixed;
+}
+
+.sysdiv div{
+display: table-cell;
+border:1px solid gray;
+width:200px
+}
+
+.vertical-line {
+display: inline;
+background-color: #000;
+width: 1px;
+height: 100%;
+}
+
+th
+{
+height:50px;
+border:1px solid gray;
+width:300px;
+font-weight:normal;
+display:none;
+}
+
+.tablespec td 
+{
+height:50px;
+border:1px solid gray;
+width:300px;
+font-weight:normal;
+}

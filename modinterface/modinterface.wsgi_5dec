@@ -1,0 +1,147 @@
+import web
+import psycopg2
+import decimal
+import jsonpickle
+import csv
+import re
+from web import form
+
+# Needed to find the templates
+import sys, os,traceback
+abspath = os.path.dirname(__file__)
+sys.path.append(abspath)
+os.chdir(abspath)
+
+import Utility.KLPDB
+
+urls = (
+     '/','modinterface',
+     '/submitSYS/(.*)','submitSYS',
+)
+
+connection = Utility.KLPDB.getConnection()
+cursor = connection.cursor()
+commentsForm=form.Form()
+imagesForm=form.Form()
+origimagedir="/images/sysimages/sys/"
+outputimagedir="/images/sysimages/school_pics_hash/"
+
+
+chooseType=form.Form()
+chooseType.inputs=(chooseType.inputs+(web.form.Radio('systype',['Comments','Images'],description="Verify : "),))
+chooseType.inputs=(chooseType.inputs+(web.form.Button("submit", type="submit", description="Get me the graphs!"),))
+
+render_plain = web.template.render('templates/')
+
+application = web.application(urls,globals()).wsgifunc()
+statements={"get_sys_comments":"select schoolid,id,name,to_char(entered_timestamp,'DD-MM-YYYY'),comments from tb_sys_data where verified='N' and not (comments is null or comments='')",
+            "get_sys_images":"select sys.schoolid,sys.id,sys.name,to_char(sys.entered_timestamp,'DD-MM-YYYY'),img.original_file from tb_sys_images img,tb_sys_data sys where img.sysid=sys.id and img.verified='N'",
+            "verify_sys_comments":"update tb_sys_data set verified=%s where id=%s",
+            "verify_sys_images":"update tb_sys_images set verified=%s where sysid=%s and original_file=%s",
+}
+
+
+class modinterface:
+  def GET(self):
+    return render_plain.choosetype(chooseType)
+ 
+  def POST(self):
+    input=chooseType()
+    self.typeform=form.Form()
+    if not input.validates():
+      print "invalid"
+      return
+    type=""
+    if input['systype'].value=='Comments':
+       print 'in comments'
+       self.typeform=self.verifyComments()
+       type="comments"
+    else:
+       print 'in images'
+       self.typeform=self.verifyImages()
+       type="images"
+    web.header('Content-Type','text/html; charset=utf-8')
+    return render_plain.modinterface(self.typeform,type)
+
+  def verifyComments(self):
+    global commentsForm
+    try:
+      cursor.execute(statements['get_sys_comments'])
+      result = cursor.fetchall()
+      for row in result:
+        commentsForm.inputs=(commentsForm.inputs+(web.form.Radio(str(row[1]),['Verify','Reject'],pre='<div>'+str(row[0])+'</div><div>'+str(row[1])+'</div><div>'+str(row[2])+'</div><div>'+str(row[3])+'</div><div>'+str(row[4])+'</div><div>',post='</div>'),))
+      commentsForm.inputs=(commentsForm.inputs+(web.form.Button("submit", type="submit", description="Submit!"),))
+      connection.commit()
+    except:
+      traceback.print_exc(file=sys.stderr)
+      connection.rollback()
+    return commentsForm
+
+  def verifyImages(self):
+    global imagesForm
+    try:
+      cursor.execute(statements['get_sys_images'])
+      result = cursor.fetchall()
+      for row in result:
+        imagesForm.inputs=(imagesForm.inputs+(web.form.Radio(str(row[1])+"|"+row[4],['Verify','Reject'],pre='<div>'+str(row[0])+"</div><div>"+str(row[1])+"</div><div>"+str(row[2])+"</div><div>"+str(row[3])+'</div><div><img src="'+origimagedir+row[4]+'" width="200" height="200"/></div><div>',post="</div>"),))
+      imagesForm.inputs=(imagesForm.inputs+(web.form.Button("submit", type="submit", description="Submit!"),))
+      connection.commit()
+    except:
+      traceback.print_exc(file=sys.stderr)
+      connection.rollback()
+    return imagesForm
+
+
+class submitSYS:
+  def POST(self,type):
+    if type=='comments':
+       self.submitComments()
+    else:
+       self.submitImages()
+    web.header('Content-Type','text/html; charset=utf-8')
+    return render_plain.sys_verified()
+
+
+  def submitComments(self):
+    print "In Comments"
+    form=commentsForm()
+    if not form.validates():
+      print "Not a valid form"
+    for sys in form.inputs:
+      if not (sys.value ==None or sys.id=='submit'):
+        status='R'
+        print sys.id
+        print sys.value
+        if sys.value=='Verify':
+          status='Y'
+        try:
+          cursor.execute(statements['verify_sys_comments'],(status,sys.id,))
+          connection.commit()
+        except:
+           traceback.print_exc(file=sys.stderr)
+           connection.rollback()
+        
+          
+  def submitImages(self):
+    form=imagesForm()
+    if not form.validates():
+      print "Not a valid form"
+    for sys in form.inputs:
+      if not (sys.value ==None or sys.id=='submit'):
+        status='R'
+        print sys.id
+        print sys.value
+        sysid=sys.id.split('|')[0]
+        filename=sys.id.split('|')[1]
+        origfilename=abspath+origimagedir+filename
+        if sys.value=='Verify':
+          status='Y'
+          outputfilename=abspath+outputimagedir+filename
+          os.system("convert "+origfilename+" -resize 50% "+outputfilename)
+        try:
+          cursor.execute(statements['verify_sys_images'],(status,sysid,filename,))
+          connection.commit()
+        except:
+           connection.rollback()
+        
+ 

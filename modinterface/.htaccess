@@ -1,0 +1,4 @@
+AuthUserFile /home/shivangi/www/modinterface/apachepassword
+AuthType Basic
+AuthName "Restricted Access"
+Require user moderator

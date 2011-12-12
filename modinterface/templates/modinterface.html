@@ -1,0 +1,43 @@
+$def with (sysinfo,type)
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SYS Moderator Interface</title>
+    <link rel="stylesheet" href="/css/main.css" type="text/css" media="screen" charset="utf-8"/>
+    <script type="text/javascript" src="/js/modinterface.js"></script>
+  </head>
+  <body>
+   <div class="sysdivheading">
+     <div>School Id</div>
+     <div>SYS Id</div>
+     <div>Submitted By</div>
+     <div>Submitted On</div>
+     <div>$type</div>
+     <div>Action</div>
+   </div>
+   <div class="sysdiv">
+     <form id="checksys" name="checksys" method="POST" action="/submitSYS/$type">
+       $for sysid in sysinfo:
+         <div>$sysid['sid']</div>
+         <div>$sysid['sysid']</div>
+         <div>$sysid['name']</div>
+         <div>$sysid['date']</div>
+         $if type=='comments':
+           <div><textarea id=$sysid['sysid']-comments name=$sysid['sysid']-comments readonly="readonly" disabled="disabled">$sysid[type]</textarea>
+            </br>
+            <input type="button" name="edit" onclick=editText($sysid['sysid'])>Edit</input>
+           </div>
+           <div><input type="radio" name=$sysid['sysid'] value='Verify'>Verify</input></br>
+           <input type="radio" name=$sysid['sysid'] value='Reject'>Reject</input>
+           </div>
+         $else:
+           <div><img src='$sysid[type]' width="200" height="200"/></div>
+           <div><input type="radio" name='$sysid['filename']' value='Verify'>Verify</input></br>
+           <input type="radio" name='$sysid['filename']' value='Reject'>Reject</input>
+           </div>
+         </br>
+       <input id="verify" type="submit" value="Submit"/>
+     </form>
+   </div>
+  </body>
+</html>

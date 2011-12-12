@@ -1,0 +1,24 @@
+$def with (form,type)
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SYS Moderator Interface</title>
+    <link rel="stylesheet" href="/css/main.css" type="text/css" media="screen" charset="utf-8"/>
+    <script type="text/javascript" src="/js/modinterface.js"></script>
+  </head>
+  <body>
+   <div class="sysdivheading">
+     <div>School Id</div>
+     <div>SYS Id</div>
+     <div>Submitted By</div>
+     <div>Submitted On</div>
+     <div>$type</div>
+     <div>Action</div>
+   </div>
+   <div class="sysdiv">
+   <form id="checksys" name="checksys" method="POST" action="/submitSYS/$type">
+           $:form.render()
+    </form>
+    </div>
+  </body>
+</html>
