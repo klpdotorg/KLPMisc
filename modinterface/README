@@ -3,6 +3,5 @@
 dbname=sys db
 user=sys user
 passwd=sys password
-[Pictures]
-origpicpath=orig file path
-hashpicpath=compressed file path
+
+2. The images directory has a softlink sysimages which should be link to the folder where the sys images are stored. i.e. /images/sysimages should have folders sys and schoolpics_hash

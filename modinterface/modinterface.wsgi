@@ -24,22 +24,22 @@ config = SafeConfigParser()
 config.read(os.path.join(os.getcwd(),'config/klpconfig.ini'))
 connection = Utility.KLPDB.getConnection()
 cursor = connection.cursor()
-origimagedir=config.get('Pictures','origpicpath')
-outputimagedir=config.get('Pictures','hashpicpath')
+origimagedir="/images/sysimages/sys/"
+outputimagedir="/images/sysimages/school_pics_hash/"
 
 
 chooseType=form.Form()
 chooseType.inputs=(chooseType.inputs+(web.form.Radio('systype',['Comments','Images'],description="Verify : "),))
-chooseType.inputs=(chooseType.inputs+(web.form.Button("submit", type="submit", description="Get me the graphs!"),))
+chooseType.inputs=(chooseType.inputs+(web.form.Button("submit", type="submit", description="Submit"),))
 
 render_plain = web.template.render('templates/')
 
 application = web.application(urls,globals()).wsgifunc()
 statements={"get_sys_comments":"select schoolid,id,name,to_char(entered_timestamp,'DD-MM-YYYY'),comments from tb_sys_data where verified='N' and not (comments is null or comments='')",
-            "get_sys_images":"select sys.schoolid,sys.id,sys.name,to_char(sys.entered_timestamp,'DD-MM-YYYY'),img.original_file from tb_sys_images img,tb_sys_data sys where img.sysid=sys.id and img.verified='N'",
+            "get_sys_images":"select sys.schoolid,sys.id,sys.name,to_char(sys.entered_timestamp,'DD-MM-YYYY'),img.hash_file from tb_sys_images img,tb_sys_data sys where img.sysid=sys.id and img.verified='N'",
             "verify_sys_comments":"update tb_sys_data set verified=%s where id=%s",
             "verify_update_sys_comments":"update tb_sys_data set verified=%s,comments=%s where id=%s",
-            "verify_sys_images":"update tb_sys_images set verified=%s where sysid=%s and original_file=%s",
+            "verify_sys_images":"update tb_sys_images set verified=%s where sysid=%s and hash_file=%s",
 }
 
 
