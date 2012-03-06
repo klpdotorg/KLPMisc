@@ -5,6 +5,7 @@ import jsonpickle
 import csv
 import re
 from web import form
+from ConfigParser import SafeConfigParser
 
 # Needed to find the templates
 import sys, os,traceback
@@ -19,10 +20,12 @@ urls = (
      '/submitSYS/(.*)','submitSYS',
 )
 
+config = SafeConfigParser()
+config.read(os.path.join(os.getcwd(),'config/klpconfig.ini'))
 connection = Utility.KLPDB.getConnection()
 cursor = connection.cursor()
-origimagedir="/images/sysimages/sys/"
-outputimagedir="/images/sysimages/school_pics_hash/"
+origimagedir=config.get('Pictures','origpicpath')
+outputimagedir=config.get('Pictures','hashpicpath')
 
 
 chooseType=form.Form()
