@@ -1,6 +1,7 @@
 cd /home/klp/ems-production
-echo 'Removing yesterdays report ' $(date --date="1 days ago" +%Y%m%d)
-rm -rf logFiles/deoreport-$(date --date="1 days ago" +%Y%m%d).csv
+echo 'Removing yesterdays and weekend old report ' $(date --date="1 days ago" +%Y%m%d)
+rm -rf logFiles/deoreportquery-$(date --date="1 days ago" +%Y%m%d).csv
+rm -rf logFiles/deoreportquery-$(date --date="3 days ago" +%Y%m%d).csv
 echo 'Start of DEOHistory process'
 python manage.py KLP_DEOHistoryquery $(date +%d/%m/%Y) $(date +%d/%m/%Y) deoreportquery-$(date +%Y%m%d)
 echo 'End of DEOHistory process'

@@ -14,6 +14,7 @@ echo 'Start of DEOHistory process'
 python manage.py  KLP_DEOHistoryquery 21/$lastmonth/$lastyear 20/$month/$year monthly_query_report-$(date +%B%Y)
 #python manage.py  KLP_DE_activity_report_sep 21/$lastmonth/$lastyear 20/$month/$year monthly_report-$(date +%B%Y)
 echo 'End of DEOHistory process'
+sleep 600
 ../daily_deo_report/monthly_deo_rep.py logFiles/monthly_query_report-$(date +%B%Y).csv
 #../daily_deo_report/monthly_deo_rep.py logFiles/monthly_report-$(date +%B%Y).csv
 echo ' Sent mail and exit'
