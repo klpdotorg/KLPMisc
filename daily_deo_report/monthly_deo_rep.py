@@ -57,6 +57,7 @@ def summarize(datafile,cursor):
 			             "Verified": long(row[i+3])/assess[3],
 			             "Rectified": long(row[i+4])/assess[3]}
   headers = ['User','Student-C','Student-U','Student-D','School-C','School-U','School-D','Staff-C','Staff-U','Staff-D']
+  os.remove('/home/klp/daily_deo_report/summary_file.csv') if os.path.exists('/home/klp/daily_deo_report/summary_file.csv') else None
   wf = open("summary_file.csv",'w')
   wf.write("PRESCHOOL DATA SUMMARY\n")
   wf.write('|'.join(headers)+'\n')
