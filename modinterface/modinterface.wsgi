@@ -152,7 +152,7 @@ class submitSYS:
       if value=='Verify':
         status='Y'
         outputfilename=abspath+outputimagedir+filename
-        os.system("convert "+origfilename+" -resize 50% "+outputfilename)
+        os.system("convert "+origfilename+" -resize 30% "+outputfilename)
       try:
         cursor.execute(statements['verify_sys_images'],(status,sysid,filename,))
         connection.commit()
