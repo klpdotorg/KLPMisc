@@ -58,7 +58,7 @@ def summarize(datafile,cursor):
 			             "Rectified": long(row[i+4])/assess[3]}
   headers = ['User','Student-C','Student-U','Student-D','School-C','School-U','School-D','Staff-C','Staff-U','Staff-D']
   os.remove('/home/klp/daily_deo_report/summary_file.csv') if os.path.exists('/home/klp/daily_deo_report/summary_file.csv') else None
-  wf = open("summary_file.csv",'w')
+  wf = open("/home/klp/daily_deo_report/summary_file.csv",'w')
   wf.write("PRESCHOOL DATA SUMMARY\n")
   wf.write('|'.join(headers)+'\n')
   for each in preschdata:
@@ -101,7 +101,7 @@ def mail(sub,textstr,filenamestr,filedir,summary_file):
   from ConfigParser import SafeConfigParser
   config = SafeConfigParser()
   #Path is /home/klp/production when the script execution comes here
-  config.read('../daily_deo_report/config/monthly_config.ini')
+  config.read('../daily_deo_report/config/oneoff_config.ini')
   sender = config.get('Mail','senderid')
   senderpwd = config.get('Mail','senderpwd')
   cc = config.get('Mail','cc_ids').split(',')
@@ -141,15 +141,19 @@ def mail(sub,textstr,filenamestr,filedir,summary_file):
   server.close()
 
 #-------------------MAIN BEGINS
+
 thisday = date.today()
 lastmonth = thisday - datetime.timedelta(days=30)
 
 reportfile = sys.argv[1]
+daterange = sys.argv[2]
+
 try:
   cursor = KLPDB.getConnection().cursor()
-  summarize(os.getcwd() + '/' + reportfile,cursor)
-  emailtext = 'Please find One off Report attached'
-  mail('[EMS-E3E] One off DEO Report generated ', emailtext,reportfile,'logFiles/','/home/klp/daily_deo_report/summary_file.csv')
+  #summarize(os.getcwd() + '/' + reportfile,cursor)
+  summarize(reportfile,cursor)
+  emailtext = 'Please find Report attached' 
+  mail('[EMS-E2E] Monthly DEO Report generated' + daterange, emailtext,reportfile,'logFiles/','/home/klp/daily_deo_report/summary_file.csv')
 except:
   print "Unexpected error:", sys.exc_info()
   print "Exception in user code:"
